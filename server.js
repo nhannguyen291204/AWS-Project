@@ -6,10 +6,12 @@ import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { assertConfiguration, bucket, db, s3, tables } from './aws.js';
 
+import { fileURLToPath } from 'url';
+
 assertConfiguration();
 const app = express();
 app.set('view engine', 'ejs');
-app.set('views', new URL('./views', import.meta.url).pathname);
+app.set('views', fileURLToPath(new URL('./views', import.meta.url)));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use(session({ secret: process.env.SESSION_SECRET || 'change-me', resave: false, saveUninitialized: false, cookie: { httpOnly: true, sameSite: 'lax' } }));

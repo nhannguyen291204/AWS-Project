@@ -17,7 +17,7 @@ Tài liệu hướng dẫn chi tiết dành cho các thành viên trong nhóm l�
 ### 🔹 Bước 1: Clone dự án & Tạo file `.env`
 1. Clone dự án về máy:
    ```bash
-   git clone <LINK_GIT_REPOSITORY>
+   git clone https://github.com/nhannguyen291204/AWS-Project.git
    cd nw
    ```
 2. Tạo file cấu hình từ file mẫu:
