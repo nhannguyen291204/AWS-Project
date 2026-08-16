@@ -1,123 +1,123 @@
-# 🎵 Hướng Dẫn Sử Dụng Ứng Dụng AWS Music Subscription (Dành Cho Người Mới Bắt Đầu)
+# 🎵 Hướng Dẫn Chạy & Triển Khai Dự Án AWS Music Subscription
 
-Tài liệu này được viết bằng Tiếng Việt với các bước đơn giản nhất, giúp bạn dễ dàng chạy ứng dụng web nghe nhạc sử dụng dịch vụ đám mây AWS (DynamoDB & S3).
-
----
-
-## 📌 1. Dự án này là gì?
-
-Đây là một ứng dụng Web viết bằng **Node.js (Express)** kết hợp với các dịch vụ đám mây **AWS**:
-* **AWS DynamoDB** (CSDL NoSQL): Dùng để lưu trữ thông tin Người dùng (login/đăng ký), Bài hát, và Danh sách đăng ký nhạc.
-* **AWS S3** (Kho lưu trữ): Dùng để lưu trữ ảnh đại diện của các nghệ sĩ / ca sĩ.
+Tài liệu hướng dẫn chi tiết dành cho các thành viên trong nhóm làm việc chung dự án. Bất kỳ ai clone code về chỉ cần thực hiện đúng theo các bước dưới đây là ứng dụng có thể chạy mượt mà 100%.
 
 ---
 
-## 🛠️ 2. Chuẩn bị những gì?
+## 📌 1. Tổng quan dự án
 
-Trước khi bắt đầu, bạn cần có:
-1. **Node.js** đã cài đặt trên máy tính.
-2. Tài khoản **AWS Academy Learner Lab** (đang hoạt động).
-3. Đã tạo sẵn **1 S3 Bucket** trên AWS Console (Ví dụ đặt tên bucket là `my-music-bucket-12345` - lưu ý tên bucket trên S3 phải là duy nhất trên toàn cầu).
+Ứng dụng Web viết bằng **Node.js (Express)** kết hợp với các dịch vụ đám mây **AWS**:
+* **AWS DynamoDB**: Lưu trữ thông tin Người dùng (Login / Register), Danh sách 128 bài hát, và Subscriptions.
+* **AWS S3**: Lưu trữ ảnh nghệ sĩ / ca sĩ của các bài hát.
 
 ---
 
-## 🚀 3. Các bước chạy ứng dụng trên máy tính (Local)
+## 🛠️ 2. Các bước chạy trên máy cá nhân (Local)
 
-### 🔹 Bước 1: Mở Terminal / Command Prompt tại thư mục dự án
-Mở thư mục `nw` bằng VS Code hoặc Terminal.
+### 🔹 Bước 1: Clone dự án & Tạo file `.env`
+1. Clone dự án về máy:
+   ```bash
+   git clone <LINK_GIT_REPOSITORY>
+   cd nw
+   ```
+2. Tạo file cấu hình từ file mẫu:
+   ```bash
+   cp .env.example .env
+   ```
+   *(Nếu dùng Windows CMD: `copy .env.example .env`)*
 
-### 🔹 Bước 2: Tạo file cấu hình `.env`
-Chạy lệnh sau để tạo file `.env` từ file mẫu:
-```bash
-cp .env.example .env
-```
-*(Nếu dùng Windows CMD, bạn copy file `.env.example` rồi đổi tên thành `.env`)*
+### 🔹 Bước 2: Điền thông tin AWS vào file `.env`
+Mở file `.env` vừa tạo và điền các thông tin sau:
 
-### 🔹 Bước 3: Điền thông tin AWS vào file `.env`
-Mở file `.env` lên, bạn sẽ thấy các thông tin cần điền:
+1. Vào trang **AWS Academy Learner Lab** ➡️ bấm **AWS Details** ➡️ bấm chữ **Show** ở mục *AWS CLI credentials*.
+2. Copy các giá trị dán tương ứng vào `.env`:
+   * `AWS_ACCESS_KEY_ID`: Điền giá trị `aws_access_key_id`
+   * `AWS_SECRET_ACCESS_KEY`: Điền giá trị `aws_secret_access_key`
+   * `AWS_SESSION_TOKEN`: Điền giá trị `aws_session_token` (Lưu ý: Token này sẽ hết hạn sau vài tiếng, khi hết hạn bạn chỉ cần vào AWS lấy token mới dán lại vào đây).
+   * `AWS_REGION`: Để mặc định `us-east-1`
+   * `S3_BUCKET_NAME`: Tên S3 Bucket của bạn trên AWS (ví dụ: `cloudmusic-a2`).
+   * `FIRST_NAME` & `LAST_NAME`: Điền Họ và Tên của bạn.
 
-1. Vào trang **AWS Academy Learner Lab** -> chọn **AWS Details** -> bấm **Show** ở mục *AWS CLI credentials*.
-2. Copy các giá trị dán vào `.env`:
-   * `AWS_ACCESS_KEY_ID`: Điền `aws_access_key_id` từ AWS.
-   * `AWS_SECRET_ACCESS_KEY`: Điền `aws_secret_access_key` từ AWS.
-   * `AWS_SESSION_TOKEN`: Điền `aws_session_token` từ AWS (Token tạm thời).
-   * `AWS_REGION`: Để mặc định là `us-east-1`.
-   * `S3_BUCKET_NAME`: Điền tên S3 Bucket bạn đã tạo ở phần Chuẩn bị.
-   * `FIRST_NAME` & `LAST_NAME`: Điền Tên và Họ của bạn (ví dụ: `FIRST_NAME=Van A`, `LAST_NAME=Nguyen`).
-
-### 🔹 Bước 4: Cài đặt thư viện (Dependencies)
-Gõ lệnh sau và ấn Enter:
+### 🔹 Bước 3: Cài đặt thư viện (Dependencies)
 ```bash
 npm install
 ```
 
-### 🔹 Bước 5: Nạp dữ liệu mẫu vào AWS (Bootstrap)
-Gõ lệnh sau và ấn Enter:
+### 🔹 Bước 4: Khởi tạo dữ liệu AWS (Bootstrap)
+Chạy lệnh nạp dữ liệu:
 ```bash
 npm run bootstrap
 ```
-👉 **Lệnh này làm gì?**
-* Tự động tạo 3 bảng trên DynamoDB: `login`, `music`, `subscriptions`.
-* Đọc dữ liệu 128 bài hát trong file `a2.json`, tự động tải ảnh nghệ sĩ về và up lên S3 Bucket của bạn.
-* Tạo sẵn 10 tài khoản người dùng mẫu để bạn đăng nhập thử.
+👉 **Lệnh này tự động thực hiện:**
+* Tạo 3 bảng trên DynamoDB: `login`, `music`, `subscription`.
+* Đọc 128 bài hát từ `a2.json`, tự động tải ảnh về và upload lên S3 Bucket.
+* Tạo sẵn 10 tài khoản dùng thử từ `s3000000@student.rmit.edu.au` đến `s3000009@student.rmit.edu.au`.
 
-### 🔹 Bước 6: Khởi chạy ứng dụng Web
-Gõ lệnh sau:
+### 🔹 Bước 5: Khởi chạy ứng dụng
 ```bash
 npm start
 ```
-Khi màn hình báo Server đang chạy, bạn mở trình duyệt (Chrome/Edge/Safari) và truy cập vào đường dẫn:
-👉 **[http://localhost:3000](http://localhost:3000)**
+Mở trình duyệt truy cập: **[http://localhost:3000](http://localhost:3000)**
+
+🔑 **Tài khoản đăng nhập dùng thử:**
+- **Email**: `s3000000@student.rmit.edu.au`
+- **Mật khẩu**: `012345`
 
 ---
 
-## 🔑 4. Tài khoản đăng nhập dùng thử
+## ☁️ 3. Triển khai (Deploy) siêu nhanh lên AWS EC2 bằng `git clone`
 
-Lệnh `npm run bootstrap` ở trên đã tự tạo sẵn 10 tài khoản sinh viên mẫu:
+Dùng `git clone` trực tiếp trên EC2 vừa nhanh gọn, vừa không tốn thời gian upload file!
 
-| Email đăng nhập | Mật khẩu (Password) |
-| :--- | :--- |
-| `s3000000@student.rmit.edu.au` | `012345` |
-| `s3000001@student.rmit.edu.au` | `123456` |
-| `s3000002@student.rmit.edu.au` | `234567` |
-| ... | ... |
-| `s3000009@student.rmit.edu.au` | `901234` |
+### 🔹 Bước 1: Chuẩn bị EC2
+* Bật 1 instance Ubuntu trên AWS Console.
+* Mở **Security Group**: Cho phép cổng **HTTP (80)** và **SSH (22)**.
+* Gán **IAM Role** cho EC2 có quyền làm việc với DynamoDB và S3.
 
-*(Quy tắc mật khẩu: dịch sang phải 1 số từ 012345)*
-
----
-
-## ☁️ 5. Hướng dẫn đưa ứng dụng lên máy chủ AWS EC2
-
-Nếu bài tập yêu cầu triển khai (deploy) ứng dụng lên đám mây AWS EC2:
-
-1. **Tạo 1 máy chủ EC2 (Ubuntu 22.04/20.04)** trên AWS Console:
-   * Mở cổng **Security Group**: Cho phép **HTTP (port 80)** và **SSH (port 22)**.
-   * Gán **IAM Role** cho EC2 có quyền truy cập DynamoDB và S3.
-
-2. **Upload code từ máy bạn lên EC2**:
+### 🔹 Bước 2: SSH vào EC2 & Git Clone mã nguồn
+1. SSH vào máy chủ EC2:
    ```bash
-   scp -i "file-key-cua-ban.pem" -r . ubuntu@DC_IP_HOAC_DNS_EC2:/home/ubuntu/music-app
+   ssh -i "duong_dan_den_file_key.pem" ubuntu@IP_PUBLIC_EC2
    ```
-
-3. **Truy cập vào EC2 qua SSH**:
+2. Clone trực tiếp mã nguồn vào thư mục `music-app`:
    ```bash
-   ssh -i "file-key-cua-ban.pem" ubuntu@DC_IP_HOAC_DNS_EC2
-   ```
-
-4. **Chạy script tự động cài đặt trên EC2**:
-   ```bash
+   git clone <LINK_GIT_REPOSITORY> /home/ubuntu/music-app
    cd /home/ubuntu/music-app
-   cp .env.example .env
-   nano .env   # (Điền thông tin AWS tương tự bước ở local)
-   sudo bash deploy/setup-ec2.sh
    ```
 
-5. Sau khi hoàn tất, bạn mở trình duyệt gõ `http://IP_PUBLIC_CUA_EC2` là có thể truy cập trang web!
+### 🔹 Bước 3: Tạo file `.env` trên EC2
+* **Cách 1 (Nhanh nhất - SCP file `.env` từ máy cá nhân lên)**:
+  Mở cửa sổ Terminal ở máy bạn và gõ:
+  ```bash
+  scp -i "duong_dan_den_file_key.pem" .env ubuntu@IP_PUBLIC_EC2:/home/ubuntu/music-app/.env
+  ```
+* **Cách 2 (Tạo trực tiếp trên EC2)**:
+  ```bash
+  cp .env.example .env
+  nano .env    # Dán thông tin AWS vào, bấm Ctrl+O -> Enter -> Ctrl+X để lưu
+  ```
+
+### 🔹 Bước 4: Chạy script tự động cài đặt
+Tại thư mục `/home/ubuntu/music-app` trên EC2:
+```bash
+sudo bash deploy/setup-ec2.sh
+```
+*(Script sẽ tự động cài Node.js, Nginx, cài `npm install` và chạy service ngầm)*
+
+### 🔹 Bước 5: Kiểm tra ứng dụng
+```bash
+sudo systemctl status music-app
+```
+*(Hiển thị `active (running)` màu xanh là hoàn tất 100%)*
+
+Mở trình duyệt gõ: `http://IP_PUBLIC_EC2` để truy cập ứng dụng!
 
 ---
 
-## 🔍 6. Các câu lệnh hữu ích khi kiểm tra lỗi
+## ⚠️ Lưu ý khắc phục sự cố nhanh (Troubleshooting)
 
-* **Kiểm tra trạng thái app**: `npm run check`
-* **Xem nhật ký hoạt động (Logs) trên EC2**: `sudo journalctl -u music-app -f`
+1. **Báo lỗi `UnrecognizedClientException` / `Unexpected server error`**:
+   - Do mã `AWS_SESSION_TOKEN` trong `.env` đã hết hạn. Hãy vào AWS Learner Lab lấy lại 3 dòng AWS credentials mới và dán lại vào `.env`.
+2. **Báo lỗi `Operation timed out` khi SSH vào EC2**:
+   - Kiểm tra xem máy chủ EC2 có bị đổi IP mới khi bật lại không.
+   - Kiểm tra Security Group của EC2 đã mở port 22 (SSH) chưa.

@@ -26,20 +26,19 @@ Open `http://localhost:3000`. `bootstrap` creates three on-demand DynamoDB table
 
 ## 3. Deploy on Ubuntu EC2
 
-Create a free-tier Ubuntu 20.04/22.04 EC2 instance and its security group should allow inbound TCP 80 (HTTP) and 22 (SSH). Attach an IAM role permitting DynamoDB access for the three tables and S3 object read/write on the chosen bucket. An IAM role is safer than permanent credentials on EC2.
+Create a free-tier Ubuntu 20.04/22.04 EC2 instance and set its security group to allow inbound TCP 80 (HTTP) and 22 (SSH). Attach an IAM role permitting DynamoDB access for the three tables and S3 object read/write on the chosen bucket.
 
-From your computer, copy this directory to the instance (do not copy `.env` unless you intentionally need it):
+SSH into your EC2 instance and clone the repository directly:
 
 ```bash
-scp -i your-key.pem -r . ubuntu@YOUR_EC2_PUBLIC_DNS:/home/ubuntu/music-app
+ssh -i your-key.pem ubuntu@YOUR_EC2_PUBLIC_DNS
+git clone <YOUR_GIT_REPOSITORY_URL> /home/ubuntu/music-app
+cd /home/ubuntu/music-app
 ```
 
-Then SSH in and run:
+Then create `.env` (by copying from your local machine via `scp` or creating it with `cp .env.example .env` and editing with `nano .env`), and run the automated setup script:
 
 ```bash
-cd /home/ubuntu/music-app
-cp .env.example .env
-nano .env
 sudo bash deploy/setup-ec2.sh
 ```
 
