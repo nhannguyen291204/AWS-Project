@@ -78,10 +78,13 @@ Dùng `git clone` trực tiếp trên EC2 vừa nhanh gọn, vừa không tốn 
 1. SSH vào máy chủ EC2:
    ```bash
    ssh -i "duong_dan_den_file_key.pem" ubuntu@IP_PUBLIC_EC2
+   ssh -i "/Users/macbook/Downloads/labsuser.pem" ubuntu@3.80.1.214
+
+/Users/macbook/Downloads/labsuser.pem
    ```
 2. Clone trực tiếp mã nguồn vào thư mục `music-app`:
    ```bash
-   git clone <LINK_GIT_REPOSITORY> /home/ubuntu/music-app
+   git clone https://github.com/nhannguyen291204/AWS-Project.git /home/ubuntu/music-app
    cd /home/ubuntu/music-app
    ```
 
