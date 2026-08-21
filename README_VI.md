@@ -91,7 +91,7 @@ Dùng `git clone` trực tiếp trên EC2 vừa nhanh gọn, vừa không tốn 
 1. SSH vào máy chủ EC2:
    ```bash
    ssh -i "duong_dan_den_file_key.pem" ubuntu@IP_PUBLIC_EC2
-   ssh -i "/Users/macbook/Downloads/labsuser.pem" ubuntu@3.80.1.214
+   ssh -i "/Users/macbook/Downloads/labsuser.pem" ubuntu@32.192.222.141
    ```
 
 /Users/macbook/Downloads/labsuser.pem
@@ -108,7 +108,7 @@ cd /home/ubuntu/music-app
 - **Cách 1 (Nhanh nhất - SCP file `.env` từ máy cá nhân lên)**:
   Mở cửa sổ Terminal ở máy bạn và gõ:
   ```bash
-  scp -i "/Users/macbook/Downloads/labsuser.pem" .env ubuntu@ubuntu@3.80.1.214:/home/ubuntu/music-app/.env
+  scp -i "/Users/macbook/Downloads/labsuser.pem" .env ubuntu@32.192.222.141:/home/ubuntu/music-app/.env
   ```
 - **Cách 2 (Tạo trực tiếp trên EC2)**:
   ```bash
@@ -142,6 +142,9 @@ Mở trình duyệt gõ: `http://IP_PUBLIC_EC2` để truy cập ứng dụng!
 
 1. **Báo lỗi `UnrecognizedClientException` / `Unexpected server error`**:
    - Do mã `AWS_SESSION_TOKEN` trong `.env` đã hết hạn. Hãy vào AWS Learner Lab lấy lại 3 dòng AWS credentials mới và dán lại vào `.env`.
+   ```bash
+   sudo systemctl restart music-app
+   ```
 2. **Báo lỗi `Operation timed out` khi SSH vào EC2**:
    - Kiểm tra xem máy chủ EC2 có bị đổi IP mới khi bật lại không.
    - Kiểm tra Security Group của EC2 đã mở port 22 (SSH) chưa.
